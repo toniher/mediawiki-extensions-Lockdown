@@ -203,8 +203,14 @@ class Hooks {
 	 */
 	public static function onSearchableNamespaces( array &$searchableNs ) {
 		$user = RequestContext::getMain()->getUser();
-		$ugroups = $user->getEffectiveGroups();
-
+		
+		// Hack for problem with 1.27.x
+		$ugroups = array('*');
+		
+		if ( $user->getId() > 0 ) {
+			$ugroups = $user->getEffectiveGroups();
+		}
+		
 		foreach ( $searchableNs as $ns => $name ) {
 			if ( !self::namespaceCheck( $ns, $ugroups ) ) {
 				unset( $searchableNs[$ns] );
